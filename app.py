@@ -263,6 +263,7 @@ def predict():
             'height': height,
             'weight': weight,
             'bmi': bmi,
+            'sleep_hours': sleep_hours,
             'bp_systolic': int(bp_systolic) if bp_systolic else 'Not provided',
             'bp_diastolic': int(bp_diastolic) if bp_diastolic else 'Not provided',
             'heart_rate': int(heart_rate) if heart_rate else 'Not provided',

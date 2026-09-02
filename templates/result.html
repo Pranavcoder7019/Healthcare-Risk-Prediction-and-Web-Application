@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Prediction Report - Health Risk Intelligence</title>
+    <title>Diagnostic Report - HealthSync AI</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -11,6 +12,7 @@
     <!-- Custom Glass Styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
 
     <!-- Premium Navbar (Hidden during printing) -->
@@ -18,7 +20,7 @@
         <div class="container">
             <a class="navbar-brand d-flex align-items-center gap-2 fw-bold text-primary" href="{{ url_for('index') }}">
                 <i class="bi bi-heart-pulse-fill fs-3 text-danger"></i>
-                <span class="fs-4">CardioGuard AI</span>
+                <span class="fs-4">HealthSync AI</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -26,10 +28,16 @@
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav align-items-center gap-3">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('index') }}"><i class="bi bi-grid-fill me-1"></i>Dashboard</a>
+                        <a class="nav-link" href="{{ url_for('index') }}"><i class="bi bi-house-door-fill me-1"></i>Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('about') }}"><i class="bi bi-info-circle-fill me-1"></i>About Model</a>
+                        <a class="nav-link" href="{{ url_for('index') }}#analytics-section"><i class="bi bi-grid-fill me-1"></i>Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('index') }}#predictionForm"><i class="bi bi-clipboard-pulse me-1"></i>Run Diagnosis</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('about') }}"><i class="bi bi-info-circle-fill me-1"></i>About</a>
                     </li>
                     <li class="nav-item">
                         <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Dark Mode">
@@ -41,115 +49,177 @@
         </div>
     </nav>
 
-    <!-- Print Report Header (Visible only when printing) -->
-    <div class="container d-none print-report-header text-center py-3">
-        <h2 class="fw-bold">CARDIOGUARD AI DIAGNOSTIC REPORT</h2>
-        <p class="text-muted">Generated on: <span id="current-date"></span> | Report ID: CG-{{ patient.name[:3]|upper }}-{{ patient.age }}-{{ confidence|int }}</p>
+    <!-- Lab Report Header (Screen & Print Header) -->
+    <div class="container text-center pt-4 pb-2 print-report-header">
+        <h2 class="fw-bold text-primary mb-1">HealthSync AI Diagnostic Lab Report</h2>
+        <p class="text-secondary small mb-2">Automated Machine Learning Health Risk Analytics Assessment</p>
+        <div class="d-flex justify-content-between text-muted small border-top border-bottom py-2 mt-2">
+            <span><strong>Date Generated:</strong> <span id="current-date"></span></span>
+            <span><strong>Report Signature Code:</strong> HSAI-{{ patient.name[:3]|upper }}-{{ patient.age }}-{{ risk_level|upper }}</span>
+        </div>
     </div>
 
-    <div class="container my-5">
-        
-        <!-- Risk Result Card -->
-        <div class="glass-card mb-5 text-center">
-            <h1 class="fw-bold mb-4">Risk Assessment Output</h1>
-            
-            <div class="d-inline-block px-4 py-3 rounded-4 mb-4 fs-3 fw-bold 
-                {% if risk_level == 'Low' %}risk-low
-                {% elif risk_level == 'Medium' %}risk-medium
-                {% else %}risk-high
-                {% endif %}">
-                <i class="bi 
-                    {% if risk_level == 'Low' %}bi-shield-check
-                    {% elif risk_level == 'Medium' %}bi-shield-exclamation
-                    {% else %}bi-shield-slash-fill
-                    {% endif %} me-2"></i>
-                {{ risk_level|upper }} RISK LEVEL
+    <div class="container my-4">
+
+        <!-- Diagnostic Assessment Result Card -->
+        <div class="glass-card mb-4 text-center p-4 print-border">
+            <div class="mb-3">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle 
+                    {% if risk_level == 'Low' %}bg-success text-white
+                    {% elif risk_level == 'Medium' %}bg-warning text-dark
+                    {% else %}bg-danger text-white
+                    {% endif %}" style="width: 70px; height: 70px;">
+                    <i class="bi 
+                        {% if risk_level == 'Low' %}bi-check-lg fs-1
+                        {% elif risk_level == 'Medium' %}bi-exclamation-lg fs-1
+                        {% else %}bi-x-lg fs-1
+                        {% endif %}"></i>
+                </div>
             </div>
-            
-            <div class="mx-auto" style="max-width: 500px;">
-                <p class="text-secondary mb-2 fw-medium">AI Model Assessment Confidence Score</p>
-                <div class="progress progress-confidence mb-3">
+
+            <h5 class="fw-bold text-uppercase text-secondary tracking-wide mb-2">Diagnostic Assessment Result</h5>
+            <h3 class="fw-bold mb-2">Patient: <span class="text-primary">{{ patient.name }}</span></h3>
+            <p class="text-secondary mb-3">Model predicts a 
+                <strong class="{% if risk_level == 'Low' %}text-success{% elif risk_level == 'Medium' %}text-warning{% else %}text-danger{% endif %}">
+                    {{ risk_level }} Risk
+                </strong> profile classification.
+            </p>
+
+            <div class="mb-4">
+                <span class="btn btn-outline-dark rounded-pill px-4 py-2 fw-bold text-uppercase border-2">
+                    {{ risk_level }} RISK
+                </span>
+            </div>
+
+            <div class="mx-auto border-top pt-3" style="max-width: 600px;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-semibold text-secondary">Model Classification Confidence</span>
+                    <span class="fw-bold text-primary fs-5">{{ confidence }}%</span>
+                </div>
+                <div class="progress progress-confidence" style="height: 10px;">
                     <div class="progress-bar progress-bar-striped progress-bar-glow 
                         {% if risk_level == 'Low' %}bg-success
                         {% elif risk_level == 'Medium' %}bg-warning
                         {% else %}bg-danger
-                        {% endif %}" 
-                        role="progressbar" 
-                        style="width: {{ confidence }}%;" 
-                        aria-valuenow="{{ confidence }}" 
-                        aria-valuemin="0" 
-                        aria-valuemax="100">
-                        {{ confidence }}%
+                        {% endif %}" role="progressbar" style="width: {{ confidence }}%;"
+                        aria-valuenow="{{ confidence }}" aria-valuemin="0" aria-valuemax="100">
                     </div>
                 </div>
-                <p class="small text-muted">The system is {{ confidence }}% confident that the subject fits the clinical criteria for {{ risk_level|lower }} disease risk.</p>
             </div>
         </div>
 
-        <div class="row g-4">
-            <!-- Patient Demographics & Vitals Table -->
-            <div class="col-lg-6">
-                <div class="glass-card h-100 print-border">
-                    <h3 class="fw-bold mb-4 border-bottom pb-2 text-primary"><i class="bi bi-file-earmark-person me-2"></i>Patient Summary</h3>
-                    <div class="table-responsive">
-                        <table class="table table-borderless align-middle">
+        <!-- Patient Clinical Record Section -->
+        <div class="glass-card mb-4 print-border">
+            <h4 class="fw-bold mb-4 text-primary d-flex align-items-center gap-2 border-bottom pb-3">
+                <i class="bi bi-card-checklist text-primary"></i> Patient Clinical Record
+            </h4>
+
+            <div class="row g-4">
+                <!-- Demographics Card -->
+                <div class="col-lg-4">
+                    <div class="p-3 border rounded-3 h-100 bg-body-tertiary">
+                        <h5 class="fw-bold text-primary mb-3 d-flex align-items-center gap-2">
+                            <i class="bi bi-person-vcard-fill"></i> Demographics
+                        </h5>
+                        <table class="table table-borderless table-sm align-middle mb-0">
                             <tbody>
                                 <tr>
-                                    <th class="text-secondary fw-semibold">Patient Name</th>
-                                    <td class="fw-bold text-end">{{ patient.name }}</td>
+                                    <td class="text-secondary fw-semibold">Age</td>
+                                    <td class="fw-bold text-end">{{ patient.age }} yrs</td>
                                 </tr>
                                 <tr>
-                                    <th class="text-secondary fw-semibold">Age / Gender</th>
-                                    <td class="fw-bold text-end">{{ patient.age }} yrs / {{ patient.gender }}</td>
+                                    <td class="text-secondary fw-semibold">Gender</td>
+                                    <td class="fw-bold text-end">{{ patient.gender }}</td>
                                 </tr>
                                 <tr>
-                                    <th class="text-secondary fw-semibold">Height / Weight</th>
-                                    <td class="fw-bold text-end">{{ patient.height }} cm / {{ patient.weight }} kg</td>
+                                    <td class="text-secondary fw-semibold">Height</td>
+                                    <td class="fw-bold text-end">{{ patient.height }} cm</td>
                                 </tr>
                                 <tr>
-                                    <th class="text-secondary fw-semibold">Body Mass Index (BMI)</th>
+                                    <td class="text-secondary fw-semibold">Weight</td>
+                                    <td class="fw-bold text-end">{{ patient.weight }} kg</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary fw-semibold">BMI</td>
+                                    <td class="fw-bold text-end text-primary fs-6">{{ patient.bmi }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Physiology & Vitals Card -->
+                <div class="col-lg-4">
+                    <div class="p-3 border rounded-3 h-100 bg-body-tertiary">
+                        <h5 class="fw-bold text-primary mb-3 d-flex align-items-center gap-2">
+                            <i class="bi bi-heart-pulse-fill"></i> Physiology & Vitals
+                        </h5>
+                        <table class="table table-borderless table-sm align-middle mb-0">
+                            <tbody>
+                                <tr>
+                                    <td class="text-secondary fw-semibold">Blood Pressure</td>
                                     <td class="fw-bold text-end">
-                                        <span class="badge 
-                                            {% if patient.bmi < 18.5 %}bg-warning text-dark
-                                            {% elif patient.bmi < 25 %}bg-success
-                                            {% elif patient.bmi < 30 %}bg-warning text-dark
-                                            {% else %}bg-danger
-                                            {% endif %}">
-                                            {{ patient.bmi }}
-                                        </span>
+                                        {% if patient.bp_systolic != 'Not provided' and patient.bp_diastolic != 'Not provided' %}
+                                            {{ patient.bp_systolic }}/{{ patient.bp_diastolic }} mmHg
+                                        {% else %}Not provided{% endif %}
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="text-secondary fw-semibold">Blood Pressure</th>
-                                    <td class="fw-bold text-end">{{ patient.bp_systolic }}/{{ patient.bp_diastolic }} mmHg</td>
+                                    <td class="text-secondary fw-semibold">Heart Rate</td>
+                                    <td class="fw-bold text-end">
+                                        {% if patient.heart_rate != 'Not provided' %}{{ patient.heart_rate }} bpm{% else %}Not provided{% endif %}
+                                    </td>
                                 </tr>
                                 <tr>
-                                    <th class="text-secondary fw-semibold">Resting Heart Rate</th>
-                                    <td class="fw-bold text-end">{{ patient.heart_rate }} bpm</td>
+                                    <td class="text-secondary fw-semibold">Temperature</td>
+                                    <td class="fw-bold text-end">
+                                        {% if patient.temperature != 'Not provided' %}{{ patient.temperature }} °C{% else %}Not provided{% endif %}
+                                    </td>
                                 </tr>
                                 <tr>
-                                    <th class="text-secondary fw-semibold">Fasting Blood Sugar</th>
-                                    <td class="fw-bold text-end">{{ patient.blood_sugar }} mg/dL</td>
+                                    <td class="text-secondary fw-semibold">Sleep Hours</td>
+                                    <td class="fw-bold text-end">{{ patient.sleep_hours }} hrs/night</td>
                                 </tr>
                                 <tr>
-                                    <th class="text-secondary fw-semibold">Total Cholesterol</th>
-                                    <td class="fw-bold text-end">{{ patient.cholesterol }} mg/dL</td>
+                                    <td class="text-secondary fw-semibold">Exercise Level</td>
+                                    <td class="fw-bold text-end">{{ patient.exercise_level }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Lab Indicators Card -->
+                <div class="col-lg-4">
+                    <div class="p-3 border rounded-3 h-100 bg-body-tertiary">
+                        <h5 class="fw-bold text-primary mb-3 d-flex align-items-center gap-2">
+                            <i class="bi bi-journal-medical"></i> Lab Indicators
+                        </h5>
+                        <table class="table table-borderless table-sm align-middle mb-0">
+                            <tbody>
+                                <tr>
+                                    <td class="text-secondary fw-semibold">Blood Sugar</td>
+                                    <td class="fw-bold text-end">
+                                        {% if patient.blood_sugar != 'Not provided' %}{{ patient.blood_sugar }} mg/dL{% else %}Not provided{% endif %}
+                                    </td>
                                 </tr>
                                 <tr>
-                                    <th class="text-secondary fw-semibold">Lifestyle (Exercise / Sleep)</th>
-                                    <td class="fw-bold text-end">{{ patient.exercise_level }} / {{ patient.age }} yrs</td>
+                                    <td class="text-secondary fw-semibold">Cholesterol</td>
+                                    <td class="fw-bold text-end">
+                                        {% if patient.cholesterol != 'Not provided' %}{{ patient.cholesterol }} mg/dL{% else %}Not provided{% endif %}
+                                    </td>
                                 </tr>
                                 <tr>
-                                    <th class="text-secondary fw-semibold">Family History of Disease</th>
+                                    <td class="text-secondary fw-semibold">Smoking</td>
+                                    <td class="fw-bold text-end">{{ patient.smoking }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary fw-semibold">Alcohol</td>
+                                    <td class="fw-bold text-end">{{ patient.alcohol }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary fw-semibold">Family History</td>
                                     <td class="fw-bold text-end">{{ patient.family_history }}</td>
-                                </tr>
-                                <tr>
-                                    <th class="text-secondary fw-semibold">Pre-existing Conditions</th>
-                                    <td class="fw-bold text-end">{{ patient.existing_diseases }}</td>
-                                </tr>
-                                <tr>
-                                    <th class="text-secondary fw-semibold">Active Symptoms</th>
-                                    <td class="fw-bold text-end">{{ patient.symptoms }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -157,74 +227,90 @@
                 </div>
             </div>
 
-            <!-- Personalized Recommendations -->
-            <div class="col-lg-6">
-                <div class="glass-card h-100 print-border">
-                    <h3 class="fw-bold mb-4 border-bottom pb-2 text-primary"><i class="bi bi-heart-pulse me-2"></i>Personalized Advisories</h3>
-                    
-                    <!-- Tab Navigation (Hidden in Print) -->
-                    <ul class="nav nav-pills nav-pills-custom mb-3 no-print" id="pills-tab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="pills-diet-tab" data-bs-toggle="pill" data-bs-target="#pills-diet" type="button" role="tab"><i class="bi bi-egg-fried me-1"></i>Diet</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="pills-lifestyle-tab" data-bs-toggle="pill" data-bs-target="#pills-lifestyle" type="button" role="tab"><i class="bi bi-activity me-1"></i>Lifestyle</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="pills-medical-tab" data-bs-toggle="pill" data-bs-target="#pills-medical" type="button" role="tab"><i class="bi bi-prescription2 me-1"></i>Medical</button>
-                        </li>
-                    </ul>
-
-                    <!-- Tab Contents (Fully expanded during print via CSS overrides) -->
-                    <div class="tab-content" id="pills-tabContent">
-                        
-                        <!-- Diet Tab -->
-                        <div class="tab-pane fade show active print-border" id="pills-diet" role="tabpanel">
-                            <h5 class="fw-bold text-success mb-3 d-none d-print-block">Diet Recommendations</h5>
-                            <ul class="recs-list ps-0">
-                                {% for item in recs.diet %}
-                                    <li>{{ item }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        
-                        <!-- Lifestyle Tab -->
-                        <div class="tab-pane fade print-border" id="pills-lifestyle" role="tabpanel">
-                            <h5 class="fw-bold text-warning mb-3 d-none d-print-block">Lifestyle Modifications</h5>
-                            <ul class="recs-list ps-0">
-                                {% for item in recs.lifestyle %}
-                                    <li>{{ item }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        
-                        <!-- Medical Tab -->
-                        <div class="tab-pane fade print-border" id="pills-medical" role="tabpanel">
-                            <h5 class="fw-bold text-danger mb-3 d-none d-print-block">Medical & Clinical Actions</h5>
-                            <ul class="recs-list danger-list ps-0">
-                                {% for item in recs.medical %}
-                                    <li>{{ item }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        
+            <!-- Bottom Row: Symptoms & Pre-existing Conditions -->
+            <div class="row g-3 mt-3 border-top pt-3">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-record-circle-fill text-danger"></i>
+                        <span class="fw-bold me-2">Reported Symptom Log:</span>
+                        <span class="text-secondary">{{ patient.symptoms }}</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-plus-square-fill text-primary"></i>
+                        <span class="fw-bold me-2">Existing Conditions:</span>
+                        <span class="text-secondary">{{ patient.existing_diseases }}</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Clinical Disclaimer -->
-        <div class="glass-card my-5 bg-opacity-10 border-danger print-border">
-            <h5 class="fw-bold text-danger"><i class="bi bi-shield-fill-exclamation me-2"></i>Clinical Disclaimer</h5>
-            <p class="small text-secondary mb-0" style="text-align: justify;">{{ recs.disclaimer }}</p>
+        <!-- Clinical Recommendation Guidance Section -->
+        <div class="glass-card mb-4 print-border">
+            <h4 class="fw-bold mb-4 text-primary d-flex align-items-center gap-2 border-bottom pb-3">
+                <i class="bi bi-clipboard-check-fill text-primary"></i> Clinical Recommendation Guidance
+            </h4>
+
+            <div class="row g-4">
+                <!-- Dietary Adjustments -->
+                <div class="col-md-6">
+                    <div class="p-3 border rounded-3 h-100 bg-success bg-opacity-10 border-success border-opacity-25">
+                        <h5 class="fw-bold text-success mb-3 d-flex align-items-center gap-2">
+                            <i class="bi bi-apple"></i> Dietary Adjustments
+                        </h5>
+                        <ul class="mb-0 ps-3 text-secondary small">
+                            {% for item in recs.diet %}
+                            <li class="mb-2">{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Lifestyle & Activity -->
+                <div class="col-md-6">
+                    <div class="p-3 border rounded-3 h-100 bg-warning bg-opacity-10 border-warning border-opacity-25">
+                        <h5 class="fw-bold text-warning mb-3 d-flex align-items-center gap-2">
+                            <i class="bi bi-person-walking"></i> Lifestyle & Activity
+                        </h5>
+                        <ul class="mb-0 ps-3 text-secondary small">
+                            {% for item in recs.lifestyle %}
+                            <li class="mb-2">{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Physician Consultation & Follow-up -->
+                <div class="col-12">
+                    <div class="p-3 border rounded-3 bg-danger bg-opacity-10 border-danger border-opacity-25">
+                        <h5 class="fw-bold text-danger mb-3 d-flex align-items-center gap-2">
+                            <i class="bi bi-person-fill-gear"></i> Physician Consultation & Follow-up
+                        </h5>
+                        <ul class="mb-0 ps-3 text-secondary small">
+                            {% for item in recs.medical %}
+                            <li class="mb-2">{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medicine & Diagnostic Disclaimer -->
+            <div class="p-3 border rounded-3 bg-warning bg-opacity-25 border-warning mt-4">
+                <h6 class="fw-bold text-dark mb-2 d-flex align-items-center gap-2">
+                    <i class="bi bi-exclamation-triangle-fill text-warning"></i> Medicine & Diagnostic Disclaimer
+                </h6>
+                <p class="small text-secondary mb-0" style="text-align: justify;">{{ recs.disclaimer }}</p>
+            </div>
         </div>
 
         <!-- Action Buttons (Hidden during printing) -->
-        <div class="d-flex justify-content-between align-items-center no-print">
-            <a class="btn btn-outline-primary px-4 py-2" href="{{ url_for('index') }}">
+        <div class="d-flex justify-content-between align-items-center no-print my-4">
+            <a class="btn btn-outline-primary px-4 py-2 rounded-pill fw-semibold" href="{{ url_for('index') }}">
                 <i class="bi bi-arrow-left me-1"></i> Run Another Assessment
             </a>
-            <button class="btn btn-primary px-4 py-2" id="printReportBtn">
+            <button class="btn btn-primary px-4 py-2 rounded-pill fw-semibold" id="printReportBtn">
                 <i class="bi bi-printer-fill me-1"></i> Print / Save PDF Report
             </button>
         </div>
@@ -237,11 +323,12 @@
         // Set dynamic date for print layout
         document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', {
             year: 'numeric',
-            month: 'long',
+            month: 'numeric',
             day: 'numeric'
         });
     </script>
     <!-- Custom Scripts -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
+
 </html>

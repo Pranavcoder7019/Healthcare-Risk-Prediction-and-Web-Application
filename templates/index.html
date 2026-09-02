@@ -20,7 +20,7 @@
         <div class="container">
             <a class="navbar-brand d-flex align-items-center gap-2 fw-bold text-primary" href="{{ url_for('index') }}">
                 <i class="bi bi-heart-pulse-fill fs-3 text-danger"></i>
-                <span class="fs-4">CardioGuard AI</span>
+                <span class="fs-4">HealthSync AI</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -28,10 +28,16 @@
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav align-items-center gap-3">
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ url_for('index') }}"><i class="bi bi-grid-fill me-1"></i>Dashboard</a>
+                        <a class="nav-link active" href="{{ url_for('index') }}"><i class="bi bi-house-door-fill me-1"></i>Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('about') }}"><i class="bi bi-info-circle-fill me-1"></i>About Model</a>
+                        <a class="nav-link" href="#analytics-section"><i class="bi bi-grid-fill me-1"></i>Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#predictionForm"><i class="bi bi-clipboard-pulse me-1"></i>Run Diagnosis</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('about') }}"><i class="bi bi-info-circle-fill me-1"></i>About</a>
                     </li>
                     <li class="nav-item">
                         <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Dark Mode">
@@ -45,9 +51,24 @@
 
     <div class="container my-5">
         <!-- Hero Section -->
-        <header class="text-center mb-5 animate-fade">
-            <h1 class="display-4 fw-bold">Healthcare Risk Intelligence</h1>
-            <p class="lead text-secondary">A predictive analytics framework using Random Forest Machine Learning to calculate general health risk levels and deliver personalized care advice.</p>
+        <header class="text-center mb-5 animate-fade py-3">
+            <div class="mb-3">
+                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill fw-semibold">
+                    <i class="bi bi-gear-wide-connected me-1"></i> Next-Gen Disease Risk Predictor
+                </span>
+            </div>
+            <h1 class="display-4 fw-bold mb-3">AI-Powered <span class="text-primary">Clinical Diagnostics</span> & Risk Assessment</h1>
+            <p class="lead text-secondary mx-auto mb-4" style="max-width: 800px;">
+                Instantly evaluate chronic condition hazards using our robust Machine Learning models trained on medical metrics. Fill out your vitals to get a detailed diagnosis report and personalized recommendations.
+            </p>
+            <div class="d-flex justify-content-center gap-3 mb-4">
+                <a href="#predictionForm" class="btn btn-primary btn-lg rounded-pill px-4 py-2 fw-semibold">
+                    <i class="bi bi-stethoscope me-2"></i>Begin Diagnosis Form
+                </a>
+                <a href="#analytics-section" class="btn btn-outline-secondary btn-lg rounded-pill px-4 py-2 fw-semibold">
+                    <i class="bi bi-graph-up me-2"></i>Explore Analytics
+                </a>
+            </div>
             {% if error %}
                 <div class="alert alert-danger d-flex align-items-center justify-content-center gap-2 mx-auto" style="max-width: 600px;" role="alert">
                     <i class="bi bi-exclamation-triangle-fill"></i>
@@ -57,7 +78,7 @@
         </header>
 
         <!-- Interactive Statistics & Chart Dashboard -->
-        <section class="mb-5">
+        <section id="analytics-section" class="mb-5">
             <div class="row g-4 mb-4">
                 <!-- Stats Card 1 -->
                 <div class="col-md-4">
