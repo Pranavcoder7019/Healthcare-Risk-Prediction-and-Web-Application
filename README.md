@@ -1,4 +1,4 @@
-# Healthcare Risk Prediction & Analytics Web Application
+# Healthcare Risk Prediction 
 
 An AI-powered, modern, responsive clinical decision support system built with a Python Flask backend and a premium HTML/CSS/JavaScript frontend utilizing glassmorphic aesthetics. 
 
